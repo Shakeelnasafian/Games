@@ -4,7 +4,7 @@ import random
 
 # Initialize Pygame
 pygame.init()
-
+   
 # Constants
 SCREEN_WIDTH = 600
 SCREEN_HEIGHT = 400
