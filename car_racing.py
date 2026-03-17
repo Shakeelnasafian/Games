@@ -73,12 +73,8 @@ def draw_car(surface, x, y, w, h, color, is_player=False):
 
     # Windshields
     windshield_color = (180, 230, 255)
-    if is_player:
-        pygame.draw.rect(surface, windshield_color, (cx + 6, y + 8, w - 12, 16), border_radius=4)
-        pygame.draw.rect(surface, windshield_color, (cx + 6, y + h - 24, w - 12, 16), border_radius=4)
-    else:
-        pygame.draw.rect(surface, windshield_color, (cx + 6, y + 8, w - 12, 16), border_radius=4)
-        pygame.draw.rect(surface, windshield_color, (cx + 6, y + h - 24, w - 12, 16), border_radius=4)
+    pygame.draw.rect(surface, windshield_color, (cx + 6, y + 8, w - 12, 16), border_radius=4)
+    pygame.draw.rect(surface, windshield_color, (cx + 6, y + h - 24, w - 12, 16), border_radius=4)
 
     # Wheels
     wheel_color = (20, 20, 20)
@@ -189,7 +185,7 @@ def main():
 
         running = True
         while running:
-            dt = clock.tick(60)
+            clock.tick(60)
 
             # Events
             for event in pygame.event.get():
