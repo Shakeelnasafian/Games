@@ -40,83 +40,102 @@ def game_over_screen(score):
     over_font = pygame.font.SysFont('arial', 50)
     over_text = over_font.render('Game Over', True, RED)
     score_text = font.render(f'Final Score: {score}', True, WHITE)
+    restart_text = font.render('Press R to Restart  |  Q to Quit', True, WHITE)
 
     screen.fill(BLACK)
     screen.blit(over_text, (SCREEN_WIDTH // 2 - over_text.get_width() // 2,
                              SCREEN_HEIGHT // 3))
     screen.blit(score_text, (SCREEN_WIDTH // 2 - score_text.get_width() // 2,
                               SCREEN_HEIGHT // 2))
+    screen.blit(restart_text, (SCREEN_WIDTH // 2 - restart_text.get_width() // 2,
+                                SCREEN_HEIGHT * 2 // 3))
     pygame.display.flip()
-    pygame.time.delay(3000)
-    pygame.quit()
-    sys.exit()
-
-
-def main():
-    # Initial snake parameters
-    snake = [(100, 100), (80, 100), (60, 100)]
-    direction = 'RIGHT'
-    change_to = direction
-
-    # Initial food position
-    food_pos = (random.randrange(1, SCREEN_WIDTH // BLOCK_SIZE) * BLOCK_SIZE,
-                random.randrange(1, SCREEN_HEIGHT // BLOCK_SIZE) * BLOCK_SIZE)
-    score = 0
 
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_UP and direction != 'DOWN':
-                    change_to = 'UP'
-                elif event.key == pygame.K_DOWN and direction != 'UP':
-                    change_to = 'DOWN'
-                elif event.key == pygame.K_LEFT and direction != 'RIGHT':
-                    change_to = 'LEFT'
-                elif event.key == pygame.K_RIGHT and direction != 'LEFT':
-                    change_to = 'RIGHT'
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_r:
+                    return True
+                if event.key == pygame.K_q:
+                    pygame.quit()
+                    sys.exit()
+    return False
 
-        direction = change_to
 
-        # Move snake
-        head_x, head_y = snake[0]
-        if direction == 'UP':
-            head_y -= BLOCK_SIZE
-        elif direction == 'DOWN':
-            head_y += BLOCK_SIZE
-        elif direction == 'LEFT':
-            head_x -= BLOCK_SIZE
-        elif direction == 'RIGHT':
-            head_x += BLOCK_SIZE
+def main():
+    while True:
+        # Initial snake parameters
+        snake = [(100, 100), (80, 100), (60, 100)]
+        direction = 'RIGHT'
+        change_to = direction
 
-        new_head = (head_x, head_y)
-        snake.insert(0, new_head)
+        # Initial food position
+        food_pos = (random.randrange(1, SCREEN_WIDTH // BLOCK_SIZE) * BLOCK_SIZE,
+                    random.randrange(1, SCREEN_HEIGHT // BLOCK_SIZE) * BLOCK_SIZE)
+        score = 0
 
-        # Check if snake ate food
-        if snake[0] == food_pos:
-            score += 1
-            food_pos = (random.randrange(1, SCREEN_WIDTH // BLOCK_SIZE) * BLOCK_SIZE,
-                        random.randrange(1, SCREEN_HEIGHT // BLOCK_SIZE) * BLOCK_SIZE)
-        else:
-            snake.pop()
+        running = True
+        while running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_UP and direction != 'DOWN':
+                        change_to = 'UP'
+                    elif event.key == pygame.K_DOWN and direction != 'UP':
+                        change_to = 'DOWN'
+                    elif event.key == pygame.K_LEFT and direction != 'RIGHT':
+                        change_to = 'LEFT'
+                    elif event.key == pygame.K_RIGHT and direction != 'LEFT':
+                        change_to = 'RIGHT'
 
-        # Check for collisions
-        if (head_x < 0 or head_x >= SCREEN_WIDTH or
-                head_y < 0 or head_y >= SCREEN_HEIGHT or
-                new_head in snake[1:]):
-            game_over_screen(score)
+            direction = change_to
 
-        # Draw everything
-        screen.fill(BLACK)
-        for block in snake:
-            draw_block(GREEN, block)
-        draw_block(RED, food_pos)
-        show_score(score)
+            # Move snake
+            head_x, head_y = snake[0]
+            if direction == 'UP':
+                head_y -= BLOCK_SIZE
+            elif direction == 'DOWN':
+                head_y += BLOCK_SIZE
+            elif direction == 'LEFT':
+                head_x -= BLOCK_SIZE
+            elif direction == 'RIGHT':
+                head_x += BLOCK_SIZE
 
-        pygame.display.update()
-        clock.tick(FPS)
+            new_head = (head_x, head_y)
+            snake.insert(0, new_head)
+
+            # Check if snake ate food
+            if snake[0] == food_pos:
+                score += 1
+                food_pos = (random.randrange(1, SCREEN_WIDTH // BLOCK_SIZE) * BLOCK_SIZE,
+                            random.randrange(1, SCREEN_HEIGHT // BLOCK_SIZE) * BLOCK_SIZE)
+            else:
+                snake.pop()
+
+            # Check for collisions
+            if (head_x < 0 or head_x >= SCREEN_WIDTH or
+                    head_y < 0 or head_y >= SCREEN_HEIGHT or
+                    new_head in snake[1:]):
+                running = False
+
+            # Draw everything
+            screen.fill(BLACK)
+            for block in snake:
+                draw_block(GREEN, block)
+            draw_block(RED, food_pos)
+            show_score(score)
+
+            pygame.display.update()
+            clock.tick(FPS)
+
+        restart = game_over_screen(score)
+        if not restart:
+            break
 
 
 if __name__ == '__main__':
